@@ -11,7 +11,9 @@ RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/r
 && chmod 777 /var/lib/smokeping/.simg \
 && chmod u+s /usr/sbin/fping \
 && chmod 777 /var/log/lighttpd \
-&& rm -f /etc/lighttpd/lighttpd.conf
+&& rm -f /etc/lighttpd/lighttpd.conf \
+&& rm -f /etc/smokeping/config
+
 
 
 
@@ -22,6 +24,6 @@ CMD ["/usr/bin/supervisord"]
 
 
 
-VOLUME /config
+VOLUME /etc/smokeping/config
 
 EXPOSE 32080
