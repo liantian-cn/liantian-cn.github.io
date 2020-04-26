@@ -4,7 +4,7 @@ FROM alpine:latest
 RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
 &&  apk update \
 &&  apk upgrade \ 
-&& apk add --no-cache smokeping lighttpd ttf-opensans supervisor \
+&& apk add --no-cache smokeping lighttpd ttf-opensans supervisor bind-tools gawk tcptraceroute  \
 && rm -rf /var/cache/apk/* \
 && rm -rf /var/www/localhost/htdocs/ \
 && ln -s /usr/share/webapps/smokeping /var/www/localhost/htdocs \
@@ -20,6 +20,9 @@ RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/r
 
 COPY lighttpd.conf /etc/lighttpd/
 COPY supervisord.conf /etc/supervisord.conf
+COPY tcpping /usr/bin/
+RUN chmod +x /usr/bin/tcpping
+
 CMD ["/usr/bin/supervisord"]
 
 
