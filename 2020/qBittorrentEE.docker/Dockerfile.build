@@ -1,0 +1,32 @@
+FROM alpine:latest
+WORKDIR /root/
+
+RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories                                   \
+&&   apk update                                                                                                               \
+&&   apk upgrade                                                                                                              \
+&&   apk add --no-cache  ca-certificates make g++ gcc qt5-qtsvg-dev boost-dev qt5-qttools-dev file wget unzip tar                 
+
+# 墙内下不动，改为拷贝                                                                                                        
+# RUN   wget https://github.com/arvidn/libtorrent/releases/download/libtorrent_1_2_7/libtorrent-rasterbar-1.2.7.tar.gz          
+# RUN   wget https://github.com/c0re100/qBittorrent-Enhanced-Edition/archive/release-4.2.5.11.zip       
+COPY libtorrent-rasterbar-1.2.7.tar.gz   .
+COPY qBittorrent-Enhanced-Edition-release-4.2.5.11.zip .
+
+RUN  cd /root                                                                                                                 \
+&&   tar  -zxvf  libtorrent-rasterbar-1.2.7.tar.gz                                                                           \
+&&   cd  libtorrent-rasterbar-1.2.7                                                                                           \
+&&   ./configure  --host=x86_64-alpine-linux-musl                                                                             \
+&&   make -j$(nproc) install-strip                                                                                                       
+
+
+RUN  cd /root                                                                                                              \
+&&   unzip qBittorrent-Enhanced-Edition-release-4.2.5.11.zip                                                                 \
+&&   cd qBittorrent-Enhanced-Edition-release-4.2.5.11/                                                                        \
+&&   ./configure   --disable-gui --host=x86_64-alpine-linux-musl                                                              \
+&&   make -j$(nproc) install                                                                                                             
+
+RUN  ldd /usr/local/bin/qbittorrent-nox   |cut -d ">" -f 2|grep lib|cut -d "(" -f 1|xargs tar -chvf /root/qbittorrent.tar   \
+&&   mkdir /qbittorrent                                                                                                       \
+&&   tar  -xvf /root/qbittorrent.tar   -C  /qbittorrent                                                                    \
+&&   cp --parents /usr/local/bin/qbittorrent-nox  /qbittorrent                                                                
+

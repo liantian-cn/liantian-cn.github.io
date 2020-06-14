@@ -1,0 +1,30 @@
+
+
+
+
+
+
+
+docker build --no-cache -t qbittorrentee:build . -f Dockerfile.build
+docker create --name extract qbittorrentee:build
+docker cp extract:/qbittorrent  .
+docker rm -f extract
+
+docker build --no-cache -t qbittorrentee:4.2.5.11 .
+
+
+docker create -p 8080:8080  -p 8443:8443 -p 9068:9068  -p 9068:9068/udp  -v /DATA:/DATA  --restart always --name qBittorrentEE qbittorrentee:4.2.5.11 /usr/local/bin/qbittorrent-nox
+
+docker start qBittorrentEE
+
+
+docker stop qBittorrentEE
+docker rm qBittorrentEE
+docker rmi  qbittorrentee:4.2.5.11
+
+
+docker export qBittorrentEE  > qBittorrentEE.export.4.2.5.11.tar
+
+docker import qBittorrentEE.export.4.2.5.11.tar qbittorrentee:4.2.5.11
+
+docker create -p 8080:8080  -p 8443:8443 -p 9068:9068  -p 9068:9068/udp  -v /DATA:/DATA  --restart always --name qBittorrentEE qbittorrentee:4.2.5.11 /usr/local/bin/qbittorrent-nox
